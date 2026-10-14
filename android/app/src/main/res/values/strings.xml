@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">PizzaSport POS</string>
+    <!-- Configurable en runtime manteniendo presionada la pantalla 1s -> "Dirección del servidor" -->
+    <string name="default_server_url">https://pizza.lanuza.site</string>
+</resources>

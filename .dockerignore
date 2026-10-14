@@ -1,0 +1,13 @@
+node_modules
+npm-debug.log
+database.sqlite
+database.sqlite-shm
+database.sqlite-wal
+backups/
+data/
+.git
+.gitignore
+.env
+*.md
+android/
+.claude/

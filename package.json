@@ -1,0 +1,31 @@
+{
+  "name": "pizzasport",
+  "version": "1.0.0",
+  "description": "Sistema de punto de venta web para pizzerías, con Express, SQLite y cliente Android.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "pos",
+    "pizzeria",
+    "point-of-sale",
+    "sqlite"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.1.0",
+    "sqlite3": "^6.0.1"
+  },
+  "overrides": {
+    "qs": "^6.16.0"
+  }
+}

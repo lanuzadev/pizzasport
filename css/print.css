@@ -1,0 +1,122 @@
+/* ═══════════════════════════════════════════════════════════
+   Print Styles — Thermal Ticket
+   Ancho de papel, márgenes y desplazamiento horizontal se controlan
+   desde Ajustes > Ticket (ver Printer.applyTicketCSSVars en printer.js),
+   que sobreescribe estas variables en :root antes de imprimir.
+   ═══════════════════════════════════════════════════════════ */
+
+:root {
+  --ticket-paper-width: 80mm;
+  --ticket-margin: 2mm;
+  --ticket-offset-x: 0mm;
+}
+
+/* Hide print area on screen */
+.print-area { display:none; }
+
+@media print {
+  /* Hide everything except the ticket */
+  body > *:not(.print-area) { display:none !important; }
+  .print-area { display:block !important; }
+
+  @page {
+    size:var(--ticket-paper-width) auto;
+    margin:0;
+  }
+
+  body {
+    background:#fff !important;
+    color:#000 !important;
+    font-family:'Courier New', Courier, monospace !important;
+    font-size:12px !important;
+    line-height:1.45 !important;
+    width:var(--ticket-paper-width) !important;
+    margin:0 !important;
+    padding:0 !important;
+    /* El gris se simula en térmicas con trama de puntos → se ve "borroso".
+       Forzamos color plano y desactivamos el suavizado de fuente. */
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+    -webkit-font-smoothing:none;
+    text-rendering:optimizeSpeed;
+  }
+
+  .ticket-item-detail, .ticket-footer, .ticket-qr-area, .ticket-barcode {
+    color:#000 !important;
+  }
+
+  .ticket img { image-rendering:pixelated; filter:grayscale(1) contrast(1.6); }
+}
+
+.ticket {
+  width:calc(var(--ticket-paper-width) - (var(--ticket-margin) * 2));
+  margin:0 auto;
+  transform:translateX(var(--ticket-offset-x));
+  padding:4mm 0;
+  font-family:'Courier New', Courier, monospace;
+  font-size:12px;
+  font-weight:600;
+  line-height:1.45;
+}
+
+.ticket-logo {
+  text-align:center; margin-bottom:6px;
+  font-size:20px; font-weight:900;
+}
+.ticket-logo .t-red { color:#E8231A; }
+.ticket-logo .t-green { color:#1B8A3E; }
+
+.ticket-header { text-align:center; margin-bottom:8px; }
+.ticket-header .biz-name { font-size:13px; font-weight:900; }
+.ticket-header .biz-addr { font-size:9px; margin-top:2px; }
+.ticket-header .biz-phone { font-size:9px; }
+
+.ticket-divider {
+  border:none; border-top:1px dashed #000;
+  margin:6px 0;
+}
+
+.ticket-meta { margin-bottom:4px; }
+.ticket-meta-row {
+  display:flex; justify-content:space-between; font-size:10px;
+}
+.ticket-meta-row strong { font-weight:700; }
+
+.ticket-items { margin:6px 0; }
+.ticket-item {
+  margin-bottom:4px;
+}
+.ticket-item-main {
+  display:flex; justify-content:space-between; font-size:11px;
+}
+.ticket-item-main .item-name { flex:1; font-weight:700; }
+.ticket-item-main .item-total { font-weight:700; min-width:56px; text-align:right; }
+.ticket-item-detail { font-size:9px; padding-left:8px; color:#444; }
+
+.ticket-totals { margin-top:6px; }
+.ticket-total-row {
+  display:flex; justify-content:space-between; font-size:10px;
+  padding:1px 0;
+}
+.ticket-total-row.final {
+  font-size:13px; font-weight:900;
+  border-top:1px solid #000; margin-top:4px; padding-top:4px;
+}
+.ticket-total-row.discount { color:#E8231A; }
+
+.ticket-payment {
+  font-size:10px; margin-top:4px;
+  display:flex; justify-content:space-between;
+}
+
+.ticket-qr-area {
+  text-align:center; margin:8px 0 4px;
+  font-size:9px; color:#666;
+}
+
+.ticket-footer {
+  text-align:center; font-size:9px;
+  color:#444; margin-top:8px; line-height:1.5;
+}
+.ticket-footer .thank-you { font-size:12px; font-weight:900; }
+
+.ticket-barcode { text-align:center; margin:6px 0; font-size:8px; letter-spacing:2px; }

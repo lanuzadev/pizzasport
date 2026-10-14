@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Rellena con el vendor-id/product-id reales de tu impresora térmica para
+  habilitar el auto-lanzamiento de la app al conectar el USB (ver el
+  intent-filter comentado en AndroidManifest.xml). Obtén los valores en
+  DECIMAL (no hex) con la impresora conectada:
+
+    adb shell dumpsys usb
+
+  Busca algo como "mVendorId=1155, mProductId=22336" bajo el dispositivo.
+-->
+<resources>
+    <!-- <usb-device vendor-id="1155" product-id="22336" /> -->
+</resources>

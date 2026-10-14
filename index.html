@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#0D0D1A" />
+  <meta name="description"
+    content="Sistema POS profesional para PizzaSport - Gestión de ventas, mesas, delivery y más" />
+  <title>PizzaSport POS</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/pos.css" />
+  <link rel="stylesheet" href="css/kitchen.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="css/inventory.css" />
+  <link rel="stylesheet" href="css/tables.css" />
+  <link rel="stylesheet" href="css/print.css" />
+</head>
+
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!--  LOGIN SCREEN                                          -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div id="login-screen" class="login-screen">
+    <div class="login-bg-particles" id="login-particles"></div>
+    <div class="login-card">
+      <div class="login-logo">
+        <img src="assets/logo.png" alt="PizzaSport" class="login-logo-img"
+          onerror="this.style.display='none';document.getElementById('login-logo-text').style.display='block'" />
+        <div id="login-logo-text" class="login-logo-text" style="display:none">
+          <span class="ps-red">Pizza</span><span class="ps-green">Sport</span>
+        </div>
+      </div>
+      <p class="login-subtitle">Sistema de Punto de Venta</p>
+
+      <div id="user-select-screen">
+        <p class="login-label">Selecciona tu usuario</p>
+        <div id="user-list" class="user-list"></div>
+      </div>
+
+      <div id="pin-screen" style="display:none">
+        <div class="selected-user-info">
+          <div class="selected-user-avatar" id="selected-avatar"></div>
+          <div>
+            <div class="selected-user-name" id="selected-user-name"></div>
+            <div class="selected-user-role" id="selected-user-role"></div>
+          </div>
+          <button class="btn-back-user" onclick="PizzaPos.auth.backToUsers()">✕</button>
+        </div>
+        <div class="pin-display" id="pin-display">
+          <span class="pin-dot" data-pos="0"></span>
+          <span class="pin-dot" data-pos="1"></span>
+          <span class="pin-dot" data-pos="2"></span>
+          <span class="pin-dot" data-pos="3"></span>
+        </div>
+        <div class="pin-pad" id="pin-pad">
+          <button class="pin-key" onclick="PizzaPos.auth.pressPin('1')">1</button>
+          <button class="pin-key" onclick="PizzaPos.auth.pressPin('2')">2</button>
+          <button class="pin-key" onclick="PizzaPos.auth.pressPin('3')">3</button>
+          <button class="pin-key" onclick="PizzaPos.auth.pressPin('4')">4</button>
+          <button class="pin-key" onclick="PizzaPos.auth.pressPin('5')">5</button>
+          <button class="pin-key" onclick="PizzaPos.auth.pressPin('6')">6</button>
+          <button class="pin-key" onclick="PizzaPos.auth.pressPin('7')">7</button>
+          <button class="pin-key" onclick="PizzaPos.auth.pressPin('8')">8</button>
+          <button class="pin-key" onclick="PizzaPos.auth.pressPin('9')">9</button>
+          <button class="pin-key pin-key-clear" onclick="PizzaPos.auth.clearPin()">⌫</button>
+          <button class="pin-key" onclick="PizzaPos.auth.pressPin('0')">0</button>
+          <button class="pin-key pin-key-enter" onclick="PizzaPos.auth.submitPin()">↵</button>
+        </div>
+        <p class="pin-error" id="pin-error"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!--  MAIN APP                                             -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div id="app" class="app hidden">
+
+    <!-- SIDEBAR BACKDROP (mobile drawer dimming) -->
+    <div id="sidebar-backdrop" class="sidebar-backdrop" onclick="PizzaPos.ui.closeSidebarDrawer()"></div>
+
+    <!-- SIDEBAR -->
+    <nav id="sidebar" class="sidebar expanded">
+      <div class="sidebar-logo"
+        style="padding: 20px; display: flex; align-items: center; justify-content: flex-start; gap: 12px; border-bottom: 1px solid var(--border-light);">
+        <img src="assets/logo.png" alt="Logo" style="height: 80px; width: auto;" />
+        <span style="font-size: 1.4rem; font-weight: 700; color: #FFFFFF; letter-spacing: -0.5px;">PizzaSport</span>
+        <button class="sidebar-drawer-close" id="sidebar-drawer-close" onclick="PizzaPos.ui.closeSidebarDrawer()" title="Cerrar">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="sidebar-nav">
+        <button class="nav-btn" id="nav-tables" data-route="tables" onclick="PizzaPos.router.go('tables')" title="Mesas">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="10" width="18" height="3" rx="1" />
+            <line x1="5" y1="13" x2="5" y2="21" />
+            <line x1="19" y1="13" x2="19" y2="21" />
+            <line x1="9" y1="10" x2="9" y2="7" />
+            <line x1="15" y1="10" x2="15" y2="7" />
+          </svg>
+          <span>Mesas</span>
+        </button>
+
+        <button class="nav-btn active" id="nav-pos" data-route="pos" onclick="PizzaPos.router.go('pos')" title="Punto de Venta">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2" />
+            <path d="M8 21h8M12 17v4" />
+            <path d="M7 8h.01M11 8h2M7 12h10" />
+          </svg>
+          <span>POS</span>
+        </button>
+
+        <button class="nav-btn" id="nav-inventory" data-route="inventory" onclick="PizzaPos.router.go('inventory')" title="Inventario">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+          <span>Inventario</span>
+        </button>
+        <button class="nav-btn" id="nav-kitchen" data-route="kitchen" onclick="PizzaPos.router.go('kitchen')" title="Cocina">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z" />
+            <path d="M6 17h12" />
+          </svg>
+          <span>Cocina</span>
+        </button>
+        <button class="nav-btn" id="nav-customers" data-route="customers" onclick="PizzaPos.router.go('customers')" title="Clientes">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
+          </svg>
+          <span>Clientes</span>
+        </button>
+        <button class="nav-btn" id="nav-marketing" data-route="marketing" onclick="PizzaPos.router.go('marketing')" title="Marketing">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 8.01c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h2l4 4v-4h10c1.1 0 2-.9 2-2V8.01z" />
+            <circle cx="9" cy="12" r="1" />
+            <circle cx="12" cy="12" r="1" />
+            <circle cx="15" cy="12" r="1" />
+          </svg>
+          <span>Marketing</span>
+        </button>
+        <button class="nav-btn" id="nav-dashboard" data-route="dashboard" onclick="PizzaPos.router.go('dashboard')" title="Dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="20" x2="18" y2="10" />
+            <line x1="12" y1="20" x2="12" y2="4" />
+            <line x1="6" y1="20" x2="6" y2="14" />
+            <path d="M2 20h20" />
+          </svg>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav-btn" id="nav-menu" data-route="menu" onclick="PizzaPos.router.go('menu')" title="Menú">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 5h18M3 10h12M3 15h9M3 20h6" />
+            <circle cx="19" cy="17" r="3" />
+            <path d="M19 14v3l2 1" />
+          </svg>
+          <span>Menú</span>
+        </button>
+        <button class="nav-btn" id="nav-cash" data-route="cash" onclick="PizzaPos.router.go('cash')" title="Caja">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="7" width="20" height="14" rx="2" />
+            <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" />
+            <circle cx="12" cy="14" r="2" />
+            <path d="M6 12h.01M18 12h.01" />
+          </svg>
+          <span>Caja</span>
+        </button>
+      </div>
+
+      <div class="sidebar-bottom">
+        <button class="nav-btn" id="nav-settings" data-route="settings" onclick="PizzaPos.router.go('settings')" title="Configuración">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3" />
+            <path
+              d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" />
+          </svg>
+          <span>Configuración</span>
+        </button>
+
+        <div class="sidebar-user" id="sidebar-user"
+          style="display:flex; align-items:center; gap:12px; padding:12px; margin-top:16px; border-top:1px solid rgba(255,255,255,0.05);">
+          <div class="header-user-avatar" id="header-avatar"
+            style="background:var(--ps-yellow); color:#111; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700;">
+          </div>
+          <div style="flex:1; overflow:hidden;">
+            <div class="header-user-name" id="header-user-name"
+              style="color:#fff; font-weight:700; font-size:0.9rem; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">
+              —</div>
+            <div class="header-user-role" id="header-user-role" style="color:var(--text-muted); font-size:0.75rem;">—
+            </div>
+          </div>
+          <button class="nav-logout" onclick="PizzaPos.auth.logout()" title="Cerrar Sesión"
+            style="color:var(--text-muted); cursor:pointer;">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-wrapper sidebar-expanded">
+
+      <!-- HEADER -->
+      <header class="app-header" id="app-header">
+        <div class="header-left">
+          <button class="sidebar-toggle" id="sidebar-toggle" onclick="PizzaPos.ui.toggleSidebar()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </button>
+          <div class="header-title" id="header-title">Punto de Venta</div>
+        </div>
+        <div class="header-center">
+          <div class="header-stats" id="header-stats">
+            <div class="stat-chip">
+              <span class="stat-label">Ventas Hoy</span>
+              <span class="stat-value" id="hdr-sales">$0.00</span>
+            </div>
+            <div class="stat-chip">
+              <span class="stat-label">Órdenes</span>
+              <span class="stat-value" id="hdr-orders">0</span>
+            </div>
+          </div>
+        </div>
+        <div class="header-right">
+          <button class="header-alert-btn" id="header-alert-btn" onclick="PizzaPos.showMessagesModal()" title="Alertas">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <span class="header-alert-badge" id="header-alert-badge" style="display:none">0</span>
+          </button>
+          <div class="header-clock" id="header-clock"></div>
+        </div>
+      </header>
+
+      <!-- VIEW CONTAINER -->
+      <main class="view-container" id="view-container">
+        <div class="loading-view">
+          <div class="spinner"></div>
+        </div>
+      </main>
+    </div>
+
+    <!-- BOTTOM TAB BAR (mobile only) -->
+    <nav id="bottom-nav" class="bottom-nav">
+      <button class="bottom-nav-btn nav-btn active" data-route="pos" onclick="PizzaPos.router.go('pos')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="3" width="20" height="14" rx="2" />
+          <path d="M8 21h8M12 17v4" />
+          <path d="M7 8h.01M11 8h2M7 12h10" />
+        </svg>
+        <span>POS</span>
+      </button>
+      <button class="bottom-nav-btn nav-btn" data-route="kitchen" onclick="PizzaPos.router.go('kitchen')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z" />
+          <path d="M6 17h12" />
+        </svg>
+        <span>Cocina</span>
+      </button>
+      <button class="bottom-nav-btn nav-btn" data-route="customers" onclick="PizzaPos.router.go('customers')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
+        </svg>
+        <span>Clientes</span>
+      </button>
+      <button class="bottom-nav-btn nav-btn" data-route="inventory" onclick="PizzaPos.router.go('inventory')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+          <line x1="12" y1="22.08" x2="12" y2="12"></line>
+        </svg>
+        <span>Inventario</span>
+      </button>
+      <button class="bottom-nav-btn" id="bottom-nav-more" onclick="PizzaPos.ui.openSidebarDrawer()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /><circle cx="5" cy="12" r="1" />
+        </svg>
+        <span>Más</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!--  MODALS CONTAINER                                     -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div id="modal-overlay" class="modal-overlay" onclick="PizzaPos.ui.closeModal(event)">
+    <div id="modal-container" class="modal-container"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!--  TOAST NOTIFICATIONS                                  -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!--  TICKET PRINT AREA                                    -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div id="print-area" class="print-area"></div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!--  SCRIPTS                                             -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <script src="js/db.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/utils/escape.js"></script>
+  <script src="js/utils/notifications.js"></script>
+  <script src="js/utils/charts.js"></script>
+  <script src="js/utils/printer.js"></script>
+  <script src="js/modules/tables.js"></script>
+  <script src="js/modules/pos.js"></script>
+  <script src="js/modules/kitchen.js"></script>
+  <script src="js/modules/dashboard.js"></script>
+  <script src="js/modules/customers.js"></script>
+  <script src="js/modules/marketing.js"></script>
+  <script src="js/modules/menu.js"></script>
+  <script src="js/modules/cash.js"></script>
+  <script src="js/modules/inventory.js"></script>
+  <script src="js/modules/settings.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,32 @@
+# Dependencias y logs
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+*.log
+
+# Datos locales (pueden contener pedidos, clientes y usuarios)
+database.sqlite*
+backups/
+data/
+
+# Variables de entorno y secretos (se conserva la plantilla pública)
+.env
+.env.*
+!.env.example
+
+# Instrucciones y estado local del agente de desarrollo
+CLAUDE.md
+.claude/
+
+# Android Studio / Gradle: conservar el código fuente, ignorar configuración local y compilados
+android/local.properties
+android/.gradle/
+android/**/build/
+android/.idea/
+
+# Archivos del sistema/editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

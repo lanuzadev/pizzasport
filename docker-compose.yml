@@ -1,0 +1,19 @@
+name: pizzasport
+
+services:
+  pizzasport:
+    build: .
+    image: pizzasport:latest
+    restart: unless-stopped
+    ports:
+      - "${HOST_PORT:-3000}:3000"
+    environment:
+      # Define ambos PIN en .env antes del primer arranque con una base vacía.
+      - ADMIN_PIN=${ADMIN_PIN:?Define ADMIN_PIN en .env}
+      - CASHIER_PIN=${CASHIER_PIN:?Define CASHIER_PIN en .env}
+    volumes:
+      # Un solo volumen para BD + backups (ver DB_PATH/BACKUPS_DIR en el Dockerfile)
+      - pizzasport_data:/app/data
+
+volumes:
+  pizzasport_data:

@@ -1,0 +1,86 @@
+/* ═══════════════════════════════════════════════════════════
+   Tables (Mesas) Styles
+   ═══════════════════════════════════════════════════════════ */
+.tables-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+}
+
+.table-card {
+  position: relative;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+}
+
+.table-card:hover {
+  transform: translateY(-2px);
+}
+
+.table-card.free {
+  border-color: var(--ps-green);
+  box-shadow: 0 2px 12px var(--ps-green-glow);
+}
+
+.table-card.occupied {
+  border-color: var(--ps-red);
+  box-shadow: 0 2px 12px var(--ps-red-glow);
+}
+
+.table-card-icon {
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+
+.table-card.free .table-card-icon { color: var(--ps-green); }
+.table-card.occupied .table-card-icon { color: var(--ps-red); }
+
+.table-card-name {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.table-card-capacity {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.table-card-order {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.table-card-admin-actions {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 4px;
+}
+
+.table-card-edit {
+  background: var(--bg-hover);
+  border: none;
+  border-radius: 6px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.table-card-edit:hover {
+  color: var(--text-primary);
+}

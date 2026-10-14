@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- La tablet debe soportar modo host USB (para hablar directo con la impresora) -->
+    <uses-feature android:name="android.hardware.usb.host" android:required="true" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:label="@string/app_name"
+        android:allowBackup="true"
+        android:theme="@android:style/Theme.Material.Light.NoActionBar">
+        <!--
+          Sin usesCleartextTraffic: el POS ahora corre sobre HTTPS
+          (pizza.lanuza.site), así que Android bloquea por defecto cualquier
+          fallback silencioso a HTTP plano — reduce superficie de ataque.
+
+          Si en algún despliegue necesitas apuntar la app a un servidor LAN
+          por HTTP plano (sin TLS), vuelve a agregar
+          android:usesCleartextTraffic="true" aquí, o mejor, define un
+          network_security_config.xml que permita cleartext solo para ese
+          host/IP específico en vez de para cualquier dominio.
+        -->
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:configChanges="orientation|screenSize|keyboardHidden|screenLayout">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <!--
+              OPCIONAL: descomenta este intent-filter + rellena
+              res/xml/device_filter.xml con el vendor-id/product-id real de tu
+              impresora (obtenidos con `adb shell dumpsys usb` mientras está
+              conectada) para que Android ofrezca abrir esta app automáticamente
+              en cuanto se conecte el cable USB de la impresora.
+
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/device_filter" />
+            -->
+        </activity>
+    </application>
+</manifest>
